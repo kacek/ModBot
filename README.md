@@ -1,0 +1,1 @@
+Diiscord moderation bot. Made with Discord.net (<https://github.com/RogueException/Discord.Net>)
