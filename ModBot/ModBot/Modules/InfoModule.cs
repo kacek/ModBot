@@ -11,31 +11,31 @@ namespace ModBot
     public class InfoModule :ModuleBase<SocketCommandContext>
     {
         [Command("ping")]
-        [Summary("Returns response time.")]
+        [Summary("Zwraca czas reakcji bota")]
         public async Task PingAsync()
         {
             await ReplyAsync(":ping_pong: Pong! :stopwatch: " + Context.Client.Latency);
         }
 
         [Command("whois")]
-        [Summary("Returns global name of specified user.")]
-        public async Task WhoIsAsync([Summary("(optional)user to get global name from.")] SocketUser user = null)
+        [Summary("Zwraca globalną nazwę użytkownika")]
+        public async Task WhoIsAsync([Summary("(opcjonalne)nazwa użytkownika.")] SocketUser user = null)
         {
             var userInfo = user ?? Context.Message.Author;
             await ReplyAsync($"{userInfo.Username}#{userInfo.Discriminator}");
         }
 
         [Command("userinfo")]
-        [Summary("Returns detailed information about user.")]
-        public async Task UserInfoAsync([Summary("(optional)user to get detailed information about")] SocketUser user = null)
+        [Summary("Zwraca szczegółowe innformacje o użytkowniku")]
+        public async Task UserInfoAsync([Summary("(opcjonalne)nazwa użytkownika")] SocketUser user = null)
         {
             var userInfo = user ?? Context.Message.Author;
             var embed = new EmbedBuilder();
             embed.WithAuthor(userInfo);
-            embed.AddField("Local name",((SocketGuildUser)userInfo).Nickname==null ? userInfo.Username : ((SocketGuildUser)userInfo).Nickname);
+            embed.AddField("Nick",((SocketGuildUser)userInfo).Nickname==null ? userInfo.Username : ((SocketGuildUser)userInfo).Nickname);
             embed.AddField("Status", userInfo.Status.ToString());
-            embed.AddField("In game", userInfo.Game.HasValue ? userInfo.Game.Value.ToString() : "none");
-            embed.AddField("Joined", ((SocketGuildUser)userInfo).JoinedAt.ToString());
+            embed.AddField("W grze", userInfo.Game.HasValue ? userInfo.Game.Value.ToString() : "brak");
+            embed.AddField("Dołączył", ((SocketGuildUser)userInfo).JoinedAt.ToString());
             embed.WithColor(Color.Blue);
             await Context.Channel.SendMessageAsync("", false, embed);
         }

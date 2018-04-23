@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Threading.Tasks;
 using System.Reflection;
+using ModBot.Helpers;
 
 namespace ModBot
 {
@@ -15,6 +16,7 @@ namespace ModBot
         private DiscordSocketClient _client;
         private CommandService _commands;
         private IServiceProvider _services;
+        private DatabaseManager _database;
 
         public async Task StartAsync()
         {
@@ -22,6 +24,12 @@ namespace ModBot
             _commands = new CommandService();
 
             _client.Log += Log;
+
+            _database = new DatabaseManager();
+            if(await _database.Init() != 0)
+            {
+                Console.WriteLine("error creating/loading XML file");
+            }
 
             Console.WriteLine("Insert Token:");
             string token = Console.ReadLine();
