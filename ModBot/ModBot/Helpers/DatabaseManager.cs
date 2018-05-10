@@ -32,7 +32,7 @@ namespace ModBot.Helpers
             {
                 return false;
             }
-            return false;
+            return true;
         }
 
         public void AddUser (ModBot.models.User user)
