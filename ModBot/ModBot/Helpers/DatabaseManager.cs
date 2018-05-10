@@ -11,12 +11,12 @@ namespace ModBot.Helpers
     {
         private XmlDocument xml = new XmlDocument();
 
-        public async Task<int> Init()
+        public bool Init()
         {
             XmlDocument xml = new XmlDocument();
             try
             {
-                xml.Load("users.xml");
+               xml.Load("users.xml");
             }
             catch (FileNotFoundException e)
             {
@@ -26,11 +26,16 @@ namespace ModBot.Helpers
                 XmlElement users = xml.CreateElement(string.Empty, "users", string.Empty);
                 xml.AppendChild(users);
                 xml.Save("users.xml");
+                return true;
             }
-            return 0;
+            catch(Exception e)
+            {
+                return false;
+            }
+            return false;
         }
 
-        public async Task<bool> AddUser (ModBot.models.User user)
+        public void AddUser (ModBot.models.User user)
         {
             xml.Load("users.xml");
             XmlElement xmlUser = xml.CreateElement(string.Empty, "user", string.Empty);
@@ -39,10 +44,9 @@ namespace ModBot.Helpers
             xml.SelectSingleNode("/users").AppendChild(xmlUser);
             xml.Save("users.xml");
             Console.WriteLine("user added to casino");
-            return true;
         }
 
-        public async Task<ModBot.models.User> GetUser(UInt64 id)
+        public ModBot.models.User GetUser(UInt64 id)
         {
             xml.Load("users.xml");
             ModBot.models.User user = new ModBot.models.User();

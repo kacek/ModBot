@@ -19,13 +19,13 @@ namespace ModBot.Modules
         public async Task EnterCasino()
         {
             var userInfo = Context.Message.Author;
-            if(await database.GetUser(userInfo.Id) == null)
+            if(database.GetUser(userInfo.Id) == null)
             {
                 User user = new User();
                 user.setUID(userInfo.Id);
                 user.setWallet(200);
-                await database.AddUser(user);
-                user = await database.GetUser(userInfo.Id);
+                database.AddUser(user);
+                user = database.GetUser(userInfo.Id);
                 if (user!= null)
                 {
                     var embed = new EmbedBuilder();
@@ -55,7 +55,7 @@ namespace ModBot.Modules
         {
             var userInfo = user == null ? Context.Message.Author : user;
             User tUser = new User();
-            tUser = await database.GetUser(userInfo.Id);
+            tUser = database.GetUser(userInfo.Id);
             if (tUser == null)
             {
                 var embed = new EmbedBuilder();

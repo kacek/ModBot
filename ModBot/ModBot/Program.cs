@@ -26,7 +26,7 @@ namespace ModBot
             _client.Log += Log;
 
             _database = new DatabaseManager();
-            if(await _database.Init() != 0)
+            if(_database.Init() != true)
             {
                 Console.WriteLine("error creating/loading XML file");
             }
