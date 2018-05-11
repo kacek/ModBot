@@ -60,19 +60,24 @@ namespace ModBot.Modules
         [Command("rzut")]
         [Summary("wykonuje rzut monetą")]
         public async Task CoinToss([Summary("strona(orzeł/reszka)")]string coinSide, [Summary("obstawiana kwota")]uint amount)
-        {
-            if (amount == 0)
+        {            
+            var tUser = database.GetUser(Context.User.Id);
+
+            if(tUser == null)
             {
-                await ReplyAsync("", embed: new EmbedBuilder().WithAuthor(Context.User).WithColor(Color.Red)
-                    .WithDescription("Na pewno chcesz rzucać nie obstawiając niczego?").Build());
+                await ReplyAsync("", embed: new EmbedBuilder().WithAuthor(Context.User).WithColor(Color.Red).WithDescription("Przykro mi, ale nie ma cię w kasynie. (Aby wejść do kasyna, użyj komendy !kasyno-wejdź)"));
                 return;
             }
-            
-            var tUser = database.GetUserNotNull(Context.User.Id);
+
+            if (amount == 0)
+            {
+                await ReplyAsync("", embed: new EmbedBuilder().WithAuthor(Context.User).WithColor(Color.Red).WithDescription("Na pewno chcesz rzucać nie obstawiając niczego?").Build());
+                return;
+            }
+
             if (!tUser.ChangeWalletCnt(-amount))
             {
-                await ReplyAsync("", embed: new EmbedBuilder().WithAuthor(Context.User).WithColor(Color.Red)
-                    .WithDescription("Kolego zaczekaj! Przecież Ty tyle nie posiadasz!").Build());
+                await ReplyAsync("", embed: new EmbedBuilder().WithAuthor(Context.User).WithColor(Color.Red).WithDescription("Kolego zaczekaj! Przecież Ty tyle nie posiadasz!").Build());
                 return;
             }
 
