@@ -39,33 +39,33 @@ namespace ModBot.Modules
                     var embed = new EmbedBuilder();
                     embed.AddField("Sukces!", string.Format("Użytkowniku {0}, zostałeś wpuszczony do kasyna, łap drobne na start!", ((SocketGuildUser)userInfo).Nickname));
                     embed.WithColor(Color.Green);
-                    await Context.Channel.SendMessageAsync("", false, embed);
+                    await Context.Channel.SendMessageAsync("", false, embed.Build());
                 }
                 else
                 {
                     var embed = new EmbedBuilder();
                     embed.AddField("Błąd!", string.Format("Użytkowniku {0}, coś poszło nie tak, i nie wszedłeś do kasyna, spróbuj ponownie!", ((SocketGuildUser)userInfo).Nickname));
                     embed.WithColor(Color.Red);
-                    await Context.Channel.SendMessageAsync("", false, embed);
+                    await Context.Channel.SendMessageAsync("", false, embed.Build());
                 }
             }else
             {
                 var embed = new EmbedBuilder();
                 embed.AddField("Hola!", string.Format("Użytkowniku {0}, już jesteś w kasynie!", ((SocketGuildUser)userInfo).Nickname));
                 embed.WithColor(Color.Red);
-                await Context.Channel.SendMessageAsync("", false, embed);
+                await Context.Channel.SendMessageAsync("", false, embed.Build());
             }
         }
 
         [Command("rzut")]
         [Summary("wykonuje rzut monetą")]
-        public async Task CoinToss([Summary("strona(orzeł/reszka)")]string coinSide, [Summary("obstawiana kwota")]uint amount)
+        public async Task CoinToss([Summary("strona(orzeł/reszka)")]CoinSide side, [Summary("obstawiana kwota")]uint amount)
         {            
             var tUser = database.GetUser(Context.User.Id);
 
             if(tUser == null)
             {
-                await ReplyAsync("", embed: new EmbedBuilder().WithAuthor(Context.User).WithColor(Color.Red).WithDescription("Przykro mi, ale nie ma cię w kasynie. (Aby wejść do kasyna, użyj komendy !kasyno-wejdź)"));
+                await ReplyAsync("", embed: new EmbedBuilder().WithAuthor(Context.User).WithColor(Color.Red).WithDescription("Przykro mi, ale nie ma cię w kasynie. (Aby wejść do kasyna, użyj komendy !kasyno-wejdź)").Build());
                 return;
             }
 
@@ -78,29 +78,6 @@ namespace ModBot.Modules
             if (!tUser.ChangeWalletCnt(-amount))
             {
                 await ReplyAsync("", embed: new EmbedBuilder().WithAuthor(Context.User).WithColor(Color.Red).WithDescription("Kolego zaczekaj! Przecież Ty tyle nie posiadasz!").Build());
-                return;
-            }
-
-            CoinSide side = CoinSide.Null;
-            switch (coinSide.ToLower())
-            {
-                case "tail":
-                case "reszka":
-                    side = CoinSide.Tail;
-                break;
-                case "head":
-                case "orzeł":
-                case "orzel":
-                    side = CoinSide.Head;
-                break;
-
-                default:
-                break;
-            }
-
-            if (side == CoinSide.Null)
-            {
-                await ReplyAsync("Nie rozpoznano strony monety!");
                 return;
             }
 
@@ -133,7 +110,7 @@ namespace ModBot.Modules
                 embed.WithAuthor(userInfo);
                 embed.AddField("Nie znaleziono!", "Ten użytkownik nie jest zarejestrowany w kasynie.");
                 embed.WithColor(Color.Red);
-                await Context.Channel.SendMessageAsync("", false, embed);
+                await Context.Channel.SendMessageAsync("", false, embed.Build());
             }
             else
             {
@@ -141,7 +118,7 @@ namespace ModBot.Modules
                 embed.WithAuthor(userInfo);
                 embed.AddField("Stan konta", tUser.getWallet().ToString());
                 embed.WithColor(Color.Gold);
-                await Context.Channel.SendMessageAsync("", false, embed);
+                await Context.Channel.SendMessageAsync("", false, embed.Build());
             }
         }
     }
