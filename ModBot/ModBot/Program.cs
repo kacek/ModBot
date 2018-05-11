@@ -8,6 +8,7 @@ using System.Reflection;
 using ModBot.Helpers;
 using ModBot.Services;
 using ModBot.TypeReaders;
+using ModBot.Enums;
 
 namespace ModBot
 {
@@ -54,8 +55,11 @@ namespace ModBot
 
         public async Task InstallCommandsAsync()
         {
+            _commands.AddTypeReader<CoinSide>(new CoinSideReader());
+            
             _client.MessageReceived += HandleCommandAsync;
             await _commands.AddModulesAsync(Assembly.GetEntryAssembly());
+
         }
 
         private async Task HandleCommandAsync(SocketMessage messageParam)

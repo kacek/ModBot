@@ -8,7 +8,7 @@ namespace ModBot.TypeReaders
 {
     public class CoinSideReader : TypeReader
     {
-        public override Task<TypeReaderResult> Read(ICommandContext context, string input, IServiceProvider services)
+        public override Task<TypeReaderResult> ReadAsync(ICommandContext context, string input, IServiceProvider services)
         {
             switch (input.ToLower())
             {

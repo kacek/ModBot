@@ -29,15 +29,18 @@ namespace ModBot
         [Summary("Zwraca szczegółowe innformacje o użytkowniku")]
         public async Task UserInfoAsync([Summary("(opcjonalne)nazwa użytkownika")] SocketUser user = null)
         {
-            var userInfo = user ?? Context.Message.Author;
+            var userInfo = (user ?? Context.User) as SocketGuildUser;
+            if (userInfo == null) return;
+            var game = userInfo.Activity as Game;
+            
             var embed = new EmbedBuilder();
             embed.WithAuthor(userInfo);
-            embed.AddField("Nick",((SocketGuildUser)userInfo).Nickname==null ? userInfo.Username : ((SocketGuildUser)userInfo).Nickname);
+            embed.AddField("Nick", userInfo.Nickname ?? userInfo.Username);
             embed.AddField("Status", userInfo.Status.ToString());
-            embed.AddField("W grze", userInfo.Game.HasValue ? userInfo.Game.Value.ToString() : "brak");
-            embed.AddField("Dołączył", ((SocketGuildUser)userInfo).JoinedAt.ToString());
+            embed.AddField("W grze", game != null ? game.Name : "brak");
+            embed.AddField("Dołączył", userInfo.JoinedAt.ToString());
             embed.WithColor(Color.Blue);
-            await Context.Channel.SendMessageAsync("", false, embed);
+            await Context.Channel.SendMessageAsync("", false, embed.Build());
         }
     }
 }
