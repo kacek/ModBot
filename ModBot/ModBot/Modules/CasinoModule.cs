@@ -7,12 +7,20 @@ using Discord.WebSocket;
 using Discord;
 using ModBot.Helpers;
 using ModBot.models;
+using ModBot.Services;
+using ModBot.Enums;
 
 namespace ModBot.Modules
 {
     public class CasinoModule : ModuleBase<SocketCommandContext>
     {
-        DatabaseManager database = new DatabaseManager();
+        private DatabaseManager database = new DatabaseManager();
+        private CasinoService _casinoService;
+
+        public CasinoModule(CasinoService c)
+        {
+            _casinoService = c;
+        }
 
         [Command("kasyno-wejdź")]
         [Summary("Umożliwia interakcję z kasynem")]
@@ -47,6 +55,64 @@ namespace ModBot.Modules
                 embed.WithColor(Color.Red);
                 await Context.Channel.SendMessageAsync("", false, embed);
             }
+        }
+
+        [Command("rzut")]
+        [Summary("wykonuje rzut monetą")]
+        public async Task CoinToss([Summary("strona(orzeł/reszka)")]string coinSide, [Summary("obstawiana kwota")]uint amount)
+        {
+            if (amount == 0)
+            {
+                await ReplyAsync("", embed: new EmbedBuilder().WithAuthor(Context.User).WithColor(Color.Red)
+                    .WithDescription("Na pewno chcesz rzucać nie obstawiając niczego?").Build());
+                return;
+            }
+            
+            var tUser = database.GetUserNotNull(Context.User.Id);
+            if (!tUser.ChangeWalletCnt(-amount))
+            {
+                await ReplyAsync("", embed: new EmbedBuilder().WithAuthor(Context.User).WithColor(Color.Red)
+                    .WithDescription("Kolego zaczekaj! Przecież Ty tyle nie posiadasz!").Build());
+                return;
+            }
+
+            CoinSide side = CoinSide.Null;
+            switch (coinSide.ToLower())
+            {
+                case "tail":
+                case "reszka":
+                    side = CoinSide.Tail;
+                break;
+                case "head":
+                case "orzeł":
+                case "orzel":
+                    side = CoinSide.Head;
+                break;
+
+                default:
+                break;
+            }
+
+            if (side == CoinSide.Null)
+            {
+                await ReplyAsync("Nie rozpoznano strony monety!");
+                return;
+            }
+
+            if (side == _casinoService.DrawCoinSide())
+            {
+                await ReplyAsync("", embed: new EmbedBuilder().WithAuthor(Context.User).WithColor(Color.Green)
+                    .WithDescription("Brawo przyjacielu! Trafiłeś!").Build());
+
+                tUser.ChangeWalletCnt(amount*2);
+            }
+            else
+            {
+                await ReplyAsync("", embed: new EmbedBuilder().WithAuthor(Context.User).WithColor(Color.Red)
+                    .WithDescription("Niestety pudełko.").Build());
+            }
+
+            database.UpdateUser(tUser);
         }
 
         [Command("portfel")]
