@@ -6,6 +6,8 @@ using System;
 using System.Threading.Tasks;
 using System.Reflection;
 using ModBot.Helpers;
+using ModBot.Services;
+using ModBot.TypeReaders;
 
 namespace ModBot
 {
@@ -34,7 +36,7 @@ namespace ModBot
             Console.WriteLine("Insert Token:");
             string token = Console.ReadLine();
 
-            _services = new ServiceCollection().AddSingleton(_client).AddSingleton(_commands).BuildServiceProvider();
+            _services = GetServiceProvider();
             try
             {
                 await InstallCommandsAsync();
@@ -72,6 +74,15 @@ namespace ModBot
         {
             Console.WriteLine(msg.ToString());
             return Task.CompletedTask;
+        }
+
+        private IServiceProvider GetServiceProvider()
+        {
+            return new ServiceCollection()
+                .AddSingleton(_client)
+                .AddSingleton(_commands)
+                .AddSingleton(new CasinoService())
+                .BuildServiceProvider();
         }
     }
 }
